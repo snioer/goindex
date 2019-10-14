@@ -2,7 +2,7 @@
 
 1.0.6 修复版  
 ====   
-根据[hang333大佬/](https://github.com/donwa/goindex/issues/52)和[shyim大佬/](https://github.com/donwa/goindex/issues/30)的代码，来修复特殊符号exception和1000文件以上不显示的问题
+根据[hang333大佬](https://github.com/donwa/goindex/issues/52)和[shyim大佬](https://github.com/donwa/goindex/issues/30)的代码，来修复特殊符号exception和1000文件以上不显示的问题
 
 GoIndex  
 ====  
