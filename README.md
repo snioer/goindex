@@ -1,5 +1,9 @@
 ![GoIndex](https://raw.githubusercontent.com/donwa/goindex/master/themes/logo.png)  
 
+1.0.6 修复版  
+====   
+根据[hang333大佬/](https://github.com/donwa/goindex/issues/52)和[shyim大佬/](https://github.com/donwa/goindex/issues/30)的代码，来修复特殊符号exception和1000文件以上不显示的问题
+
 GoIndex  
 ====  
 基于 [Cloudflare Workers](https://workers.cloudflare.com/) 和 [Google Drive](https://www.google.com/drive/) 的功能，你可以部署你的代码在Cloudflare Workers，实现以目录形式展示google drive中的文件。
