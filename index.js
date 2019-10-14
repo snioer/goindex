@@ -1,7 +1,13 @@
+/**
+根据hang333大佬和shyim大佬的代码，来修复特殊符号exception和1000文件以上不显示的问题
+https://github.com/donwa/goindex/issues/30
+https://github.com/donwa/goindex/issues/52
+ */
+
 var authConfig = {
     "siteName": "GoIndex", // 网站名称
     "root_pass": "index",  // 根目录密码，优先于.password
-    "version" : "1.0.6", // 程序版本
+    "version" : "1.0.6 - V", // 程序版本
     "theme" : "material", // material  classic 
     "client_id": "202264815644.apps.googleusercontent.com",
     "client_secret": "X4Z3ca8xfWDb1Voo-F9a7ZxJ",
@@ -18,7 +24,7 @@ var html = `
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"/>
   <title>${authConfig.siteName}</title>
-  <script src="//cdn.jsdelivr.net/combine/gh/jquery/jquery@3.2/dist/jquery.min.js,gh/donwa/goindex@${authConfig.version}/themes/${authConfig.theme}/app.js"></script>
+  <script src="//rawcdn.githack.com/kuk111111/goindex/70c407e709f97b2c4929765633eae3d6c5893af9/themes/${authConfig.theme}/app.js"></script>
 </head>
 <body>
 </body>
@@ -133,6 +139,7 @@ class googleDrive {
       let requestOption = await this.requestOption();
       let response = await fetch(url, requestOption);
       let obj = await response.json();
+      obj.files.map(result => {result.name = encodeURIComponent(result.name);return result})
       console.log(obj);
       return obj.files[0];
     }
@@ -163,23 +170,40 @@ class googleDrive {
       return this.passwords[path];
     }
 
-    async _ls(parent){
-      console.log("_ls",parent);
+async _ls(parent) {
+        console.log("_ls", parent);
 
-      if(parent==undefined){
-        return null;
-      }
-      let url = 'https://www.googleapis.com/drive/v3/files';
-      let params = {'includeItemsFromAllDrives':true,'supportsAllDrives':true};
-      params.q = `'${parent}' in parents and trashed = false AND name !='.password'`;
-      params.orderBy= 'folder,name,modifiedTime desc';
-      params.fields = "nextPageToken, files(id, name, mimeType, size , modifiedTime)";
-      params.pageSize = 1000;
-      url += '?'+this.enQuery(params);
-      let requestOption = await this.requestOption();
-      let response = await fetch(url, requestOption);
-      let obj = await response.json();
-      return obj;
+        if (parent == undefined) {
+            return null;
+        }
+        let url = 'https://www.googleapis.com/drive/v3/files';
+        let params = {
+            includeItemsFromAllDrives: true,
+            supportsAllDrives: true,
+        };
+        params.q = `'${parent}' in parents and trashed = false AND name !='.password'`;
+        params.orderBy = 'folder,name,modifiedTime desc';
+        params.fields = "nextPageToken, files(id, name, mimeType, size , modifiedTime)";
+        params.pageSize = 1000;
+        url += '?' + this.enQuery(params);
+        let requestOption = await this.requestOption();
+        let response = await fetch(url, requestOption);
+        let obj = await response.json();
+        let files = obj.files;
+
+        while(obj.nextPageToken) {
+          params.pageToken = obj.nextPageToken;
+          url = 'https://www.googleapis.com/drive/v3/files';
+          url += '?' + this.enQuery(params);
+          requestOption = await this.requestOption();
+          response = await fetch(url, requestOption);
+          obj = await response.json();
+          files = files.concat(obj.files);
+        }
+
+        return {
+          files
+        };
     }
 
     async findPathId(path){
@@ -221,6 +245,7 @@ class googleDrive {
       let requestOption = await this.requestOption();
       let response = await fetch(url, requestOption);
       let obj = await response.json();
+      obj.files.map(result => {result.name = encodeURIComponent(result.name);return result})
       if(obj.files[0] == undefined){
         return null;
       }
