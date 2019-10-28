@@ -156,7 +156,13 @@ function list_files(path,files){
                 });
             }
             var ext = p.split('.').pop();
-            if("|html|php|css|go|java|js|json|txt|sh|md|mp4|bmp|jpg|jpeg|png|gif|".indexOf(`|${ext}|`) >= 0){
+			
+		if("|bmp|jpg|jpeg|png|gif|".indexOf(`|${ext}|`) >= 0){
+            html += `<li class="mdui-list-item file mdui-ripple" target="_blank"><img class="mdui-img-fluid" src="${p}"/>
+	      </li>`;
+            }
+			
+            if("|html|php|css|go|java|js|json|txt|sh|md|mp4|".indexOf(`|${ext}|`) >= 0){
 	            p += "?a=view";
 	            c += " view";
             }
